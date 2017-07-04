@@ -7,33 +7,69 @@
 //
 
 import UIKit
+import Alamofire
 
-//Notification : 데이터 공유 서버의 개념으로 업데이트 시 해당 정보를 모고 있는 화면에 업데이트 된다.
-extension Notification.Name{
-    static var taskDidAdd: Notification.Name {return .init("taskDidadd")}
-}
+class TaskEditViewController: UIViewController {
 
-class TaskEditViewController: UIViewController{
+    var didAddTask: ((Task) -> Void)?
+    var taskList: [TaskList] = []
 
     @IBOutlet var titleInput:UITextField!
     @IBOutlet var detailInput:UITextView!
 
-    var didAddTask: ((Task) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.detailInput.layer.cornerRadius = 5
         self.detailInput.layer.borderColor = UIColor.lightGray.cgColor
         self.detailInput.layer.borderWidth = 1 / UIScreen.main.scale
+        
+        
+        //TODO :: 서버에서 목록 가져오기
+        let urlString = "http://127.0.0.1:3000/edit"
+        let parameters: [String: Any] = [
+            "_id": "595636c04dc67018c878bdaa"
+            ]
+        let headers: HTTPHeaders = [
+            "Accept": "application/json",
+            ]
+
+
+        Alamofire.request(urlString, method: .post, parameters: parameters, headers: headers).responseJSON { response in
+            switch response.result {
+            case .success(let value) :
+                guard let json = value as? [[String: Any]] else {break}
+                let tempTaskList = [TaskList](JSONArray: json) ?? [] //?? : 앞에 있는 연산자가 오류이면 []를 실행하라
+                self.taskList.append(contentsOf: tempTaskList)
+                let task = self.taskList[0]
+                
+                self.titleInput.text = "to. " + task.nickName + " (" + task.phoneNo + ")"
+                self.detailInput.text = task.message
+            case .failure(let error) :
+                print("요청 실패 \(error)")
+                
+            }
+        }
+        
+        
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.titleInput.becomeFirstResponder()
+        
+
     }
     
+    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        print("#######")
+        if segue.identifier == "taskCell" {
+            print("taksCell")
+        }
+    }
+   
     @IBAction func doneButtonDidTap(){
-        
         //if let & guard let
         //if let => 영역 안에서만 사용 가능
         //guard let => 선언 아래부터 사용 가능

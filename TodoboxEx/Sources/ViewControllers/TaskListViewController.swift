@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 
 let TodoboxTasksUserDefaultsKey = "TodoboxTasksUserDefaultsKey"
 
@@ -22,15 +23,18 @@ class TaskListViewController: UIViewController {
     
     var tasks: [Task] = [] {
         didSet{
-            self.fSaveAll()
+            self.saveTaskAll()
         }
     }
+    
+     var taskList: [TaskList] = []
+    
     
     @IBOutlet var editButton: UIBarButtonItem!
     @IBOutlet var tableView: UITableView!
     
     let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: nil)
-    
+
     deinit {
         //NotificationCenter에 등록된 옵저버의 타겟 객체가 소멸
         NotificationCenter.default.removeObserver(self)
@@ -39,7 +43,7 @@ class TaskListViewController: UIViewController {
     override func awakeFromNib() {
         super.awakeFromNib()
         //NotificationCenter에 등록
-        NotificationCenter.default.addObserver(self, selector: #selector(fTaskDidAdd), name: .taskDidAdd, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(taskDidAdd), name: .taskDidAdd, object: nil)
     }
     
     
@@ -47,28 +51,68 @@ class TaskListViewController: UIViewController {
         super.viewDidLoad()
         
         self.doneButton.target = self
-        self.doneButton.action = #selector(fDoneButtonDidTap)
+        self.doneButton.action = #selector(doneButtonDidTap)
+
         
-        if let dicts = UserDefaults.standard.array(forKey: TodoboxTasksUserDefaultsKey) as? [[String: Any]] {
-            self.tasks = dicts.flatMap { (disc: [String: Any]) -> Task? in
-                if let title = disc["title"] as? String, let detail = disc["detail"] as? String, let isDone = disc["isDone"] as? Bool {
-                    return Task(title: title, detail: detail, isDone: isDone)
-                } else {
-                    return nil
-                }
+        //TODO :: 서버에서 목록 가져오기
+        let urlString = "http://127.0.0.1:3000/"
+        
+        Alamofire.request(urlString).responseJSON { response in
+            switch response.result {
+            case .success(let value) :
+                guard let json = value as? [[String: Any]] else {break}
+                let tempTaskList = [TaskList](JSONArray: json) ?? [] //?? : 앞에 있는 연산자가 오류이면 []를 실행하라
+                self.taskList.append(contentsOf: tempTaskList)
+                self.tableView.reloadData()
+            case .failure(let error) :
+                print("요청 실패 \(error)")
+                
             }
-            self.tableView.reloadData()
+        }
+        
+        
+        /*
+        Alamofire.request("https://api.graygram.com/feed").responseJSON { response in
+            switch response.result {
+            case .success(let value) :
+                guard let json = value as? [String: Any] else {break}
+                if let data = json["data"] as? [[String: Any]] {
+                    let tempTaskList = [TaskList](JSONArray: data) ?? [] //?? : 앞에 있는 연산자가 오류이면 []를 실행하라
+                    self.taskList.append(contentsOf: tempTaskList)
+                    self.tableView.reloadData()
+                }
+                
+            case .failure(let error) :
+                print("요청 실패 \(error)")
+                
+            }
+        }
+        */
+    }
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        //self.performSegueWithIdentifier("nextView", sender: self)
+        if segue.identifier == "taskCell" {
+            print("taskCell")
+        } else {
+            print("addButton")
         }
     }
     
-    func fTaskDidAdd(_ notification: Notification ) {
+    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
+        print("prepareForSegue")
+    }
+    
+    //TODO :: TaskEditViewController 저장 시
+    func taskDidAdd(_ notification: Notification ) {
         guard let task = notification.userInfo?["task"] as? Task else { return }
         self.tasks.append(task)
         self.tableView.reloadData()
-        self.fSaveAll();
+        self.saveTaskAll();
     }
     
-    func fSaveAll() {
+    func saveTaskAll() {
         let dicts:[[String: Any]] = self.tasks.map {
             (task: Task) -> [String: Any] in
             return [
@@ -83,16 +127,14 @@ class TaskListViewController: UIViewController {
         UserDefaults.standard.synchronize()
     }
     
-    @IBAction func fEditButtonDidTap() {
-        guard !self.tasks.isEmpty else {
-            return
-        }
+    @IBAction func editButtonDidTap() {
+        guard !self.tasks.isEmpty else { return }
         
         self.navigationItem.leftBarButtonItem = self.doneButton
         self.tableView.setEditing(true, animated: true)
     }
 
-    func fDoneButtonDidTap() {
+    func doneButtonDidTap() {
         self.navigationItem.leftBarButtonItem = self.editButton
         self.tableView.setEditing(false, animated: true)
     }
@@ -101,35 +143,38 @@ class TaskListViewController: UIViewController {
 
 
 extension TaskListViewController: UITableViewDataSource{
-        
+    //tableView Row Count
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tasks.count
+        //return tasks.count
+        return self.taskList.count
     }
         
+    //tableView Row Data
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell", for: indexPath)
-        let task = self.tasks[indexPath.row]
-        cell.textLabel?.text = task.title
-        cell.detailTextLabel?.text = task.detail
-        
+        let task = self.taskList[indexPath.row]
+        cell.textLabel?.text = "to. " + task.nickName + " (" + task.phoneNo + ")"
+        cell.detailTextLabel?.text = task.message
+        cell.accessoryType = .disclosureIndicator
+        /*
         if task.isDone {
             cell.accessoryType = .checkmark
         } else {
             cell.accessoryType = .none
         }
+        */
         return cell
     }
-        
 }
 
 
 extension TaskListViewController: UITableViewDelegate{
-    
+    //Task 선택
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print("\(indexPath)가 선택!")
-        var task = self.tasks[indexPath.row]
-        task.isDone = !task.isDone
-        self.tasks[indexPath.row] = task
+        print("\(indexPath)가 선택!")
+        var task = self.taskList[indexPath.row]
+        //task.isDone = !task.isDone
+        self.taskList[indexPath.row] = task
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
@@ -137,7 +182,7 @@ extension TaskListViewController: UITableViewDelegate{
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         self.tasks.remove(at: indexPath.row)
         self.tableView.deleteRows(at: [indexPath], with: .automatic)
-        self.fSaveAll();
+        self.saveTaskAll();
     }
     
     //위치 이동
@@ -154,4 +199,6 @@ extension TaskListViewController: UITableViewDelegate{
         
         self.tasks = tasks
     }
+    
+    
 }
