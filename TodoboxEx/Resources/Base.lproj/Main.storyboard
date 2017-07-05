@@ -108,14 +108,30 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZXX-Iq-kZM">
-                                <rect key="frame" x="16" y="126" width="343" height="521"/>
+                                <rect key="frame" x="15" y="124" width="345" height="485"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GiA-Jl-i2u">
+                                <rect key="frame" x="313" y="617" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="mediaFileSelect:" destination="8gx-Fn-MpM" eventType="touchUpInside" id="cgL-Kn-c6n"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U8r-UT-Xyz">
+                                <rect key="frame" x="25" y="626" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="eNI-Se-3og" firstAttribute="top" secondItem="ZXX-Iq-kZM" secondAttribute="bottom" constant="8" symbolic="YES" id="6h4-gX-0iQ"/>
                             <constraint firstAttribute="trailing" secondItem="kon-Pb-swW" secondAttribute="trailing" constant="15" id="8I4-3C-Alw"/>
                             <constraint firstItem="eNI-Se-3og" firstAttribute="top" secondItem="ZXX-Iq-kZM" secondAttribute="bottom" constant="15" id="9Mp-yg-jXr"/>
                             <constraint firstItem="ZXX-Iq-kZM" firstAttribute="trailing" secondItem="OBl-Fr-AmC" secondAttribute="trailingMargin" constant="15" id="AjX-P0-bE5"/>
@@ -143,6 +159,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="detailInput" destination="ZXX-Iq-kZM" id="6d8-2t-wGA"/>
+                        <outlet property="mediaFile" destination="U8r-UT-Xyz" id="zW0-gv-en5"/>
                         <outlet property="titleInput" destination="kon-Pb-swW" id="eH1-En-oug"/>
                     </connections>
                 </viewController>
@@ -184,6 +201,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="YAP-kG-0Ww"/>
+        <segue reference="vy4-dC-rc0"/>
     </inferredMetricsTieBreakers>
 </document>

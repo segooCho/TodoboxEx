@@ -9,14 +9,22 @@
 import UIKit
 import Alamofire
 
+
 class TaskEditViewController: UIViewController {
 
+    let taskListIndex = 0
     var didAddTask: ((Task) -> Void)?
     var taskList: [TaskList] = []
-
+    var taskEditMode = false
+    
     @IBOutlet var titleInput:UITextField!
     @IBOutlet var detailInput:UITextView!
+    @IBOutlet var mediaFile: UILabel!
+    
 
+    //파일 선택
+    @IBAction func mediaFileSelect(_ sender: Any) {
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,71 +32,81 @@ class TaskEditViewController: UIViewController {
         self.detailInput.layer.borderColor = UIColor.lightGray.cgColor
         self.detailInput.layer.borderWidth = 1 / UIScreen.main.scale
         
-        
-        //TODO :: 서버에서 목록 가져오기
-        let urlString = "http://127.0.0.1:3000/edit"
-        let parameters: [String: Any] = [
-            "_id": "595636c04dc67018c878bdaa"
-            ]
-        let headers: HTTPHeaders = [
-            "Accept": "application/json",
-            ]
-
-
-        Alamofire.request(urlString, method: .post, parameters: parameters, headers: headers).responseJSON { response in
-            switch response.result {
-            case .success(let value) :
-                guard let json = value as? [[String: Any]] else {break}
-                let tempTaskList = [TaskList](JSONArray: json) ?? [] //?? : 앞에 있는 연산자가 오류이면 []를 실행하라
-                self.taskList.append(contentsOf: tempTaskList)
-                let task = self.taskList[0]
-                
-                self.titleInput.text = "to. " + task.nickName + " (" + task.phoneNo + ")"
-                self.detailInput.text = task.message
-            case .failure(let error) :
-                print("요청 실패 \(error)")
-                
-            }
+        if self.taskList.count != 0 {
+            taskEditMode = true
+            let task = self.taskList[taskListIndex]
+            self.titleInput.text = "to. " + task.nickName + " (" + task.id + ")"
+            self.titleInput.isUserInteractionEnabled = false
+            self.detailInput.text = task.message
         }
-        
-        
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.titleInput.becomeFirstResponder()
-        
-
     }
-    
-    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        print("#######")
-        if segue.identifier == "taskCell" {
-            print("taksCell")
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "editTask" {
+            print("editTask")
         }
     }
-   
+
     @IBAction func doneButtonDidTap(){
         //if let & guard let
         //if let => 영역 안에서만 사용 가능
         //guard let => 선언 아래부터 사용 가능
-        guard let lTitle = self.titleInput.text, !lTitle.isEmpty else {
+        guard let titleInput = self.titleInput.text, !titleInput.isEmpty else {
             self.shakeTitleInput()
             return
         }
         
-        guard let lDetail = self.detailInput.text, !lDetail.isEmpty else {
+        guard let detailInput = self.detailInput.text, !detailInput.isEmpty else {
             self.shakeDetailInput()
             return;
         }
-            
-        self.titleInput.resignFirstResponder() //키보드 숨기기
+        
+        var urlString = "http://127.0.0.1:3000"
+        let headers: HTTPHeaders = [
+            "Accept": "application/json",
+            ]
+        var parameters: [String: Any] = [:]
+       
+        if taskEditMode == true {
+            let task = self.taskList[taskListIndex]
 
-        let newTask = Task(title: lTitle, detail: lDetail, isDone: false)
-        //self.didAddTask?(newTask)
-        NotificationCenter.default.post(name: .taskDidAdd, object: self, userInfo: ["task": newTask])
-        self.dismiss(animated: true, completion: nil)
+            urlString = urlString + "/edit"
+            parameters = [
+                "_id": task.id,
+                "message": detailInput,
+                //TODO : mediaFile 처리 필요
+            ]
+        } else {
+            urlString = urlString + "/write"
+            parameters = [
+                "fromUser": "1@1.com",
+                "nickName": titleInput,
+                "phoneNo": "01000001112",
+                "message": detailInput,
+                //TODO : mediaFile 처리 필요
+            ]
+        }
+        
+        Alamofire.request(urlString, method: .post, parameters: parameters, headers: headers).responseJSON { response in
+            switch response.result {
+            case .success(let value) :
+                print("요청 완료 \(value)")
+                
+                self.titleInput.resignFirstResponder() //키보드 숨기기
+                let newTask = Task(title: titleInput, detail: detailInput, isDone: false)
+                self.didAddTask?(newTask)
+                NotificationCenter.default.post(name: .taskDidAdd, object: self, userInfo: ["task": newTask])
+                self.dismiss(animated: true, completion: nil)
+            case .failure(let error) :
+                print("요청 실패 \(error)")
+            }
+        }
+        
         
     }
     
@@ -158,4 +176,5 @@ class TaskEditViewController: UIViewController {
     }
     
 }
+
 

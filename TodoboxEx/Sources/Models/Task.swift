@@ -21,7 +21,7 @@ struct Task {
     }
 }
 
-
+/*
 struct AlertButtonCancelYes {
     var sTitle: String
     var sMessage: String
@@ -32,9 +32,10 @@ struct AlertButtonCancelYes {
         self.sMessage = sMessage
     }
 }
+*/
 
 ////Notification
-////=>데이터 공유 서버의 개념으로 업데이트 시 해당 정보를 모고 있는 화면에 업데이트 된다.
+////=>데이터 공유 서버의 개념으로 업데이트 시 해당 정보를 보고 있는 화면에 업데이트 된다.
 extension Notification.Name{
     static var taskDidAdd: Notification.Name {return .init("taskDidAdd")}
 }

@@ -13,21 +13,13 @@ let TodoboxTasksUserDefaultsKey = "TodoboxTasksUserDefaultsKey"
 
 class TaskListViewController: UIViewController {
     
-    /*
-    var tasks: [Task] = [
-        Task(title:"청소"),
-        Task(title:"빨래"),
-        Task(title:"설거지"),
-    ]
-    */
-    
-    var tasks: [Task] = [] {
+    var tasks : [Task] = [] {
         didSet{
             self.saveTaskAll()
         }
     }
     
-     var taskList: [TaskList] = []
+    var taskList: [TaskList] = []
     
     
     @IBOutlet var editButton: UIBarButtonItem!
@@ -53,10 +45,30 @@ class TaskListViewController: UIViewController {
         self.doneButton.target = self
         self.doneButton.action = #selector(doneButtonDidTap)
 
-        
-        //TODO :: 서버에서 목록 가져오기
+        requestTaskAllList();
+    }
+    
+    // 데이터 전달
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        //self.performSegueWithIdentifier("nextView", sender: self)
+        if segue.identifier == "taskCell" {
+            print("taskCell")
+            if let navigationController = segue.destination as? UINavigationController ,
+                let taskEditViewController = navigationController.topViewController as? TaskEditViewController {
+                    let indexPath = tableView.indexPathForSelectedRow
+                    if let index = indexPath {
+                        taskEditViewController.taskList = [self.taskList[index.row]]
+                    }
+            }
+        } else {
+            print("addButton")
+        }
+    }
+    
+    //TODO :: 서버에서 목록 가져오기
+    func requestTaskAllList() {
         let urlString = "http://127.0.0.1:3000/"
-        
+        self.taskList = []
         Alamofire.request(urlString).responseJSON { response in
             switch response.result {
             case .success(let value) :
@@ -69,47 +81,17 @@ class TaskListViewController: UIViewController {
                 
             }
         }
-        
-        
-        /*
-        Alamofire.request("https://api.graygram.com/feed").responseJSON { response in
-            switch response.result {
-            case .success(let value) :
-                guard let json = value as? [String: Any] else {break}
-                if let data = json["data"] as? [[String: Any]] {
-                    let tempTaskList = [TaskList](JSONArray: data) ?? [] //?? : 앞에 있는 연산자가 오류이면 []를 실행하라
-                    self.taskList.append(contentsOf: tempTaskList)
-                    self.tableView.reloadData()
-                }
-                
-            case .failure(let error) :
-                print("요청 실패 \(error)")
-                
-            }
-        }
-        */
-    }
-    
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        //self.performSegueWithIdentifier("nextView", sender: self)
-        if segue.identifier == "taskCell" {
-            print("taskCell")
-        } else {
-            print("addButton")
-        }
-    }
-    
-    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
-        print("prepareForSegue")
     }
     
     //TODO :: TaskEditViewController 저장 시
     func taskDidAdd(_ notification: Notification ) {
+        requestTaskAllList()
+        /*
         guard let task = notification.userInfo?["task"] as? Task else { return }
         self.tasks.append(task)
         self.tableView.reloadData()
         self.saveTaskAll();
+        */
     }
     
     func saveTaskAll() {
@@ -172,10 +154,13 @@ extension TaskListViewController: UITableViewDelegate{
     //Task 선택
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("\(indexPath)가 선택!")
+        /*
         var task = self.taskList[indexPath.row]
         //task.isDone = !task.isDone
         self.taskList[indexPath.row] = task
         tableView.reloadRows(at: [indexPath], with: .automatic)
+        */
+        
     }
     
     //삭제
