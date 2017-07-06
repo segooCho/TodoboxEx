@@ -10,24 +10,74 @@ import UIKit
 import Alamofire
 
 
-class TaskEditViewController: UIViewController {
+class TaskEditViewController: UIViewController,UIImagePickerControllerDelegate,UIPopoverControllerDelegate,UINavigationControllerDelegate {
 
-    let taskListIndex = 0
-    var didAddTask: ((Task) -> Void)?
+    //MARK ::
+    fileprivate let taskListIndex = 0
+    fileprivate var didAddTask: ((Task) -> Void)?
+    fileprivate var taskEditMode = false
+    //fileprivate var imageUrl:NSURL!
+    fileprivate var localPath:URL!
     var taskList: [TaskList] = []
-    var taskEditMode = false
     
+    //MARK :: UI
     @IBOutlet var titleInput:UITextField!
     @IBOutlet var detailInput:UITextView!
-    @IBOutlet var mediaFile: UILabel!
-    
+    @IBOutlet var mediaFileNameLabel: UILabel!
+    fileprivate var picker:UIImagePickerController?=UIImagePickerController()
 
-    //파일 선택
+    //MARK :: 파일 선택
     @IBAction func mediaFileSelect(_ sender: Any) {
+        
+        //Gallary
+        picker!.allowsEditing = false
+        picker!.sourceType = UIImagePickerControllerSourceType.photoLibrary
+        present(picker!, animated: true, completion: nil)
+        
+        /*
+        //Camera
+        if(UIImagePickerController .isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)){
+            picker!.allowsEditing = false
+            picker!.sourceType = UIImagePickerControllerSourceType.camera
+            picker!.cameraCaptureMode = .photo
+            present(picker!, animated: true, completion: nil)
+        }else{
+            let alert = UIAlertController(title: "Camera Not Found", message: "This device has no Camera", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "OK", style:.default, handler: nil)
+            alert.addAction(ok)
+            present(alert, animated: true, completion: nil)
+        }
+        */
     }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
+    {
+        let imageUrl = info[UIImagePickerControllerReferenceURL] as! NSURL
+        let imageName         = imageUrl.lastPathComponent
+        let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+        let photoURL          = NSURL(fileURLWithPath: documentDirectory)
+        localPath         = photoURL.appendingPathComponent(imageName!)
+        let image             = info[UIImagePickerControllerOriginalImage]as! UIImage
+        let data              = UIImagePNGRepresentation(image)
+        
+        do
+        {
+            try data?.write(to: localPath!, options: Data.WritingOptions.atomic)
+        }
+        catch
+        {
+            // Catch exception here and act accordingly
+        }
+        
+        self.mediaFileNameLabel.text = imageUrl.lastPathComponent
+        self.dismiss(animated: true, completion: nil);
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        picker?.delegate=self
+        
         self.detailInput.layer.cornerRadius = 5
         self.detailInput.layer.borderColor = UIColor.lightGray.cgColor
         self.detailInput.layer.borderWidth = 1 / UIScreen.main.scale
@@ -67,9 +117,6 @@ class TaskEditViewController: UIViewController {
         }
         
         var urlString = "http://127.0.0.1:3000"
-        let headers: HTTPHeaders = [
-            "Accept": "application/json",
-            ]
         var parameters: [String: Any] = [:]
        
         if taskEditMode == true {
@@ -77,21 +124,103 @@ class TaskEditViewController: UIViewController {
 
             urlString = urlString + "/edit"
             parameters = [
-                "_id": task.id,
-                "message": detailInput,
-                //TODO : mediaFile 처리 필요
+                "_id" : task.id,
+                "message" : detailInput
+                //"mediaFile" : localPath
             ]
         } else {
             urlString = urlString + "/write"
             parameters = [
-                "fromUser": "1@1.com",
-                "nickName": titleInput,
-                "phoneNo": "01000001112",
-                "message": detailInput,
-                //TODO : mediaFile 처리 필요
+                "fromUser" : "1@1.com",
+                "nickName" : titleInput,
+                "phoneNo" : "01000001112",
+                "message" : detailInput
+                //"mediaFile" : localPath
             ]
         }
         
+        /*
+        var parametersFile: [String: Any] = [:]
+        if self.localPath != nil {
+            parametersFile = [
+                "mediaFile" : localPath
+            ]
+        }
+        */
+        
+        Alamofire.upload(multipartFormData: { (multipartFormData) in
+            if self.localPath != nil {
+                multipartFormData.append(self.localPath, withName: "mediaFile")
+            }
+            for (key, value) in parameters {
+                multipartFormData.append((value as AnyObject).data(using: String.Encoding.utf8.rawValue)!, withName: key)
+            }
+        }, to: urlString, method:.post, encodingCompletion: { (result) in
+            switch result {
+                case .success(let upload, _, _):
+                    upload.responseJSON { response in
+                        print("Task 등록 완료 \(response)")
+                        self.titleInput.resignFirstResponder() //키보드 숨기기
+                        let newTask = Task(title: titleInput, detail: detailInput, isDone: false)
+                        self.didAddTask?(newTask)
+                        NotificationCenter.default.post(name: .taskDidAdd, object: self, userInfo: ["task": newTask])
+                        self.dismiss(animated: true, completion: nil)
+                }
+                case .failure(let encodingError):
+                    print(encodingError)
+                }
+        })
+   
+        
+        /*
+        Alamofire.upload(
+            multipartFormData: { multipartFormData in
+                multipartFormData.append(self.imageUrl as URL, withName: "mediaFile")
+                //for (key, value) in parameters {
+                    //multipartFormData.append((value as AnyObject).data(using: String.Encoding.utf8.rawValue)!, withName: key)
+                //}
+            },
+            to: urlString,
+            method:.post,
+            encodingCompletion: { encodingResult in
+                switch encodingResult {
+                case .success(let upload, _, _):
+                    upload.responseJSON { response in
+                        debugPrint(response)
+                    }
+                case .failure(let encodingError):
+                    print(encodingError)
+                }
+            }
+        )
+        */
+        
+        /*
+        Alamofire.upload(multipartFormData: { (multipartFormData) in
+            multipartFormData.append(self.imageUrl as URL, withName: "mediaFile")
+            for (key, value) in parameters {
+                multipartFormData.append((value as AnyObject).data(using: String.Encoding.utf8.rawValue)!, withName: key)
+            }
+        }, to:"http://sample.com/upload_img.php")
+        { (result) in
+            switch result {
+            case .success(let upload, _, _):
+                
+                upload.uploadProgress(closure: { (progress) in
+                    //Print progress
+                })
+                
+                upload.responseJSON { response in
+                    //print response.result
+                }
+                
+            case .failure():
+                //print encodingError.description
+            }
+        }
+        */
+        
+        /*
         Alamofire.request(urlString, method: .post, parameters: parameters, headers: headers).responseJSON { response in
             switch response.result {
             case .success(let value) :
@@ -106,7 +235,7 @@ class TaskEditViewController: UIViewController {
                 print("요청 실패 \(error)")
             }
         }
-        
+        */
         
     }
     

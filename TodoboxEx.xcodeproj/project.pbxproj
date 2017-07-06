@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		41E4F385DA6C2089435BF018 /* Pods_Todobox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE753B2028BA7063BA37B791 /* Pods_Todobox.framework */; };
-		8443DE711F0D15130079F791 /* NSOpen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443DE701F0D15130079F791 /* NSOpen.swift */; };
 		847EB2691F0CA6FE0042E421 /* TaskEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847EB2681F0CA6FE0042E421 /* TaskEdit.swift */; };
 		848F71D21E6D136500B03A58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 848F71C11E6D136500B03A58 /* Assets.xcassets */; };
 		848F71D31E6D136500B03A58 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 848F71C21E6D136500B03A58 /* LaunchScreen.storyboard */; };
@@ -24,7 +23,6 @@
 
 /* Begin PBXFileReference section */
 		46B3879A04108779D7C5CE6D /* Pods-Todobox.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Todobox.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Todobox/Pods-Todobox.debug.xcconfig"; sourceTree = "<group>"; };
-		8443DE701F0D15130079F791 /* NSOpen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSOpen.swift; sourceTree = "<group>"; };
 		847EB2681F0CA6FE0042E421 /* TaskEdit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskEdit.swift; sourceTree = "<group>"; };
 		848F71C11E6D136500B03A58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		848F71C31E6D136500B03A58 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -117,7 +115,6 @@
 			children = (
 				848F71CF1E6D136500B03A58 /* TaskListViewController.swift */,
 				848F71CE1E6D136500B03A58 /* TaskEditViewController.swift */,
-				8443DE701F0D15130079F791 /* NSOpen.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -280,7 +277,6 @@
 				848F71D71E6D136500B03A58 /* Task.swift in Sources */,
 				847EB2691F0CA6FE0042E421 /* TaskEdit.swift in Sources */,
 				848F71D61E6D136500B03A58 /* AppDelegate.swift in Sources */,
-				8443DE711F0D15130079F791 /* NSOpen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

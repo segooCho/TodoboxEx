@@ -5,7 +5,6 @@
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -101,48 +100,40 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="kon-Pb-swW">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="kon-Pb-swW">
                                 <rect key="frame" x="15" y="79" width="344" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZXX-Iq-kZM">
-                                <rect key="frame" x="15" y="124" width="345" height="485"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZXX-Iq-kZM">
+                                <rect key="frame" x="15" y="124" width="345" height="497"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GiA-Jl-i2u">
-                                <rect key="frame" x="313" y="617" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="mediaFileSelect:" destination="8gx-Fn-MpM" eventType="touchUpInside" id="cgL-Kn-c6n"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U8r-UT-Xyz">
-                                <rect key="frame" x="25" y="626" width="42" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="File Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zc4-MM-OfX">
+                                <rect key="frame" x="16" y="633" width="300" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wfa-hJ-NYN">
+                                <rect key="frame" x="314" y="629" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="File"/>
+                                <connections>
+                                    <action selector="mediaFileSelect:" destination="8gx-Fn-MpM" eventType="touchUpInside" id="yYn-vr-hbw"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="eNI-Se-3og" firstAttribute="top" secondItem="ZXX-Iq-kZM" secondAttribute="bottom" constant="8" symbolic="YES" id="6h4-gX-0iQ"/>
-                            <constraint firstAttribute="trailing" secondItem="kon-Pb-swW" secondAttribute="trailing" constant="15" id="8I4-3C-Alw"/>
-                            <constraint firstItem="eNI-Se-3og" firstAttribute="top" secondItem="ZXX-Iq-kZM" secondAttribute="bottom" constant="15" id="9Mp-yg-jXr"/>
-                            <constraint firstItem="ZXX-Iq-kZM" firstAttribute="trailing" secondItem="OBl-Fr-AmC" secondAttribute="trailingMargin" constant="15" id="AjX-P0-bE5"/>
-                            <constraint firstAttribute="trailing" secondItem="ZXX-Iq-kZM" secondAttribute="trailing" constant="15" id="C55-3Q-kbI"/>
-                            <constraint firstItem="ZXX-Iq-kZM" firstAttribute="top" secondItem="kon-Pb-swW" secondAttribute="bottom" constant="15" id="CYz-SP-fVT"/>
-                            <constraint firstItem="ZXX-Iq-kZM" firstAttribute="leading" secondItem="OBl-Fr-AmC" secondAttribute="leadingMargin" constant="15" id="HOh-H5-FRk"/>
-                            <constraint firstItem="ZXX-Iq-kZM" firstAttribute="leading" secondItem="OBl-Fr-AmC" secondAttribute="leading" constant="15" id="Y5V-JX-Djy"/>
+                            <constraint firstAttribute="trailing" secondItem="kon-Pb-swW" secondAttribute="trailing" constant="16" id="8I4-3C-Alw"/>
                             <constraint firstItem="kon-Pb-swW" firstAttribute="top" secondItem="7Gz-4P-zC1" secondAttribute="bottom" constant="15" id="aOO-4H-5Uj"/>
-                            <constraint firstItem="ZXX-Iq-kZM" firstAttribute="top" secondItem="kon-Pb-swW" secondAttribute="bottom" constant="15" id="fXU-Sf-L9D"/>
                             <constraint firstItem="kon-Pb-swW" firstAttribute="leading" secondItem="OBl-Fr-AmC" secondAttribute="leading" constant="15" id="iWg-VM-zHs"/>
-                            <constraint firstItem="eNI-Se-3og" firstAttribute="top" secondItem="ZXX-Iq-kZM" secondAttribute="bottom" constant="15" id="rBY-AG-3Mq"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="할 일 추가" id="LhP-Je-s1o">
@@ -159,7 +150,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="detailInput" destination="ZXX-Iq-kZM" id="6d8-2t-wGA"/>
-                        <outlet property="mediaFile" destination="U8r-UT-Xyz" id="zW0-gv-en5"/>
+                        <outlet property="mediaFileNameLabel" destination="zc4-MM-OfX" id="v89-jY-ex3"/>
                         <outlet property="titleInput" destination="kon-Pb-swW" id="eH1-En-oug"/>
                     </connections>
                 </viewController>
